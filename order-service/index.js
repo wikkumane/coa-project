@@ -27,6 +27,11 @@ app.post('/orders', async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: 'Failed to create order' });
     }
+
+    await axios.post("http://notification-service:3004/notify", {
+    message: `New order placed: ${orders.id}`,
+})
+
 });
 
 app.get('/orders', (req, res) => {
