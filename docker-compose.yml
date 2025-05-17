@@ -1,8 +1,19 @@
-version: '3.8'
+version: "3.8"
+
 services:
   auth-service:
     build: ./auth-service
     ports:
       - "3001:3001"
-    env_file:
-      - ./auth-service/.env
+
+  locals-service:
+    build: ./locals-service
+    ports:
+      - "3002:3002"
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3003:3003"
+    depends_on:
+      - locals-service
