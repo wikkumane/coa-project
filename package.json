@@ -1,6 +1,26 @@
 {
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "jsonwebtoken": "^9.0.2"
-  }
+  },
+  "name": "72296-coa-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wikkumane/coa-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wikkumane/coa-project/issues"
+  },
+  "homepage": "https://github.com/wikkumane/coa-project#readme",
+  "description": ""
 }
