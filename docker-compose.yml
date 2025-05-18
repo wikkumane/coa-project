@@ -1,6 +1,18 @@
-version: "3.8"
+version: "3.9"
 
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - locals-service
+      - order-service
+      - notification-service
+
   auth-service:
     build: ./auth-service
     ports:
@@ -15,11 +27,8 @@ services:
     build: ./order-service
     ports:
       - "3003:3003"
-    depends_on:
-      - locals-service
 
   notification-service:
     build: ./notification-service
     ports:
       - "3004:3004"
-    

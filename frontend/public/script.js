@@ -1,54 +1,100 @@
-let token = null
+let token = null;
 
-async function register() {
-  await fetch("http://localhost:3001/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: document.getElementById("register-username").value,
-      password: document.getElementById("register-password").value
-    })
-  })
-  alert("Registered")
-}
+        async function register() {
+            try {
+                const response = await fetch("/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: document.getElementById("register-username").value,
+                        password: document.getElementById("register-password").value
+                    })
+                });
+                
+                if (response.ok) {
+                    alert("Registered successfully!");
+                } else {
+                    const errorText = await response.text();
+                    alert("Registration failed: " + errorText);
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
 
-async function login() {
-  const res = await fetch("http://localhost:3001/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: document.getElementById("login-username").value,
-      password: document.getElementById("login-password").value
-    })
-  })
-  const data = await res.json()
-  token = data.token
-  alert("Logged in!")
-}
+        async function login() {
+            try {
+                const response = await fetch("/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        username: document.getElementById("login-username").value,
+                        password: document.getElementById("login-password").value
+                    })
+                });
 
-async function loadLocals() {
-  const res = await fetch("http://localhost:3002/locals")
-  const data = await res.json()
-  const list = document.getElementById("locals")
-  list.innerHTML = ""
-  data.forEach(r => {
-    const li = document.createElement("li")
-    li.textContent = `${r.name} - ${r.description}`
-    list.appendChild(li)
-  })
-}
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.token;
+                    alert("Logged in successfully!");
+                } else {
+                    const errorText = await response.text();
+                    alert("Login failed: " + errorText);
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
 
-async function placeOrder() {
-  await fetch("http://localhost:3003/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      restaurant: document.getElementById("order-local").value,
-      items: document.getElementById("order-items").value.split(",").map(i => i.trim())
-    })
-  })
-  alert("Order placed!")
-}
+        async function loadLocals() {
+            try {
+                const response = await fetch('/locals/locals');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const list = document.getElementById("locals");
+                    list.innerHTML = "";
+                    
+                    data.forEach(local => {
+                        const li = document.createElement("li");
+                        li.textContent = `ID: ${local.id} - ${local.name}`;
+                        list.appendChild(li);
+                    });
+                } else {
+                    alert("Failed to load restaurants");
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        async function placeOrder() {
+            if (!token) {
+                alert("Please login first");
+                return;
+            }
+            
+            try {
+                const response = await fetch("/orders/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        user: document.getElementById("login-username").value,
+                        localId: parseInt(document.getElementById("order-local").value),
+                        items: document.getElementById("order-items").value.split(",").map(i => i.trim())
+                    })
+                });
+                
+                if (response.ok) {
+                    alert("Order placed successfully!");
+                } else {
+                    const errorText = await response.text();
+                    alert("Failed to place order: " + errorText);
+                }
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }

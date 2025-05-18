@@ -12,8 +12,9 @@ const orders = [];
 app.post('/orders', async (req, res) => {
     const { user, localId, items } = req.body;
 
+    
     try {
-        const response = await axios.post('http://localhost:3002/locals/${localId}');
+        const response = await axios.get(`http://locals-service:3002/locals/${localId}`);
         const local = response.data;
 
         const order = {
@@ -26,16 +27,18 @@ app.post('/orders', async (req, res) => {
         };
 
         orders.push(order);
+        
+        await axios.post("http://notification-service:3004/notify", {
+            message: `New order placed: ${order.id}`
+        });
+
         res.status(201).json(order);
     } catch (error) {
+        console.error("Error creating order:", error.message);
         res.status(400).json({ error: 'Failed to create order' });
     }
-
-    await axios.post("http://notification-service:3004/notify", {
-    message: `New order placed: ${orders.id}`,
-})
-
 });
+
 
 app.get('/orders', (req, res) => {
     res.json(orders);
